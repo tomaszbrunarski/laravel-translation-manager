@@ -24,16 +24,20 @@ class Manager{
         $this->files = $files;
         $this->events = $events;
         $this->config = $app['config']['translation-manager'];
+        //The new sort_keys attribute is an issue for old applications, thus we need to include the default value like this
+        if(!isset($this->config['sort_keys'])){
+            $this->config['sort_keys']=false;
+        }
     }
 
     public function missingKey($namespace, $group, $key)
     {
         if(!in_array($group, $this->config['exclude_groups'])) {
             Translation::firstOrCreate(array(
-                'locale' => $this->app['config']['app.locale'],
-                'group' => $group,
-                'key' => $key,
-            ));
+                    'locale' => $this->app['config']['app.locale'],
+                    'group' => $group,
+                    'key' => $key,
+                ));
         }
     }
 
@@ -66,10 +70,10 @@ class Manager{
                         }
                         $value = (string) $value;
                         $translation = Translation::firstOrNew(array(
-                            'locale' => $locale,
-                            'group' => $group,
-                            'key' => $key,
-                        ));
+                                'locale' => $locale,
+                                'group' => $group,
+                                'key' => $key,
+                            ));
 
                         // Check if the database is different then the files
                         $newStatus = $translation->value === $value ? Translation::STATUS_SAVED : Translation::STATUS_CHANGED;
@@ -103,8 +107,8 @@ class Manager{
             "\(".                               // Match opening parenthese
             "[\'\"]".                           // Match " or '
             "(".                                // Start a new group to match:
-                "[a-zA-Z0-9_-]+".               // Must start with group
-                "([.][^\1)]+)+".                // Be followed by one or more items/keys
+            "[a-zA-Z0-9_-]+".               // Must start with group
+            "([.][^\1)]+)+".                // Be followed by one or more items/keys
             ")".                                // Close group
             "[\'\"]".                           // Closing quote
             "[\),]";                            // Close parentheses or new parameter
